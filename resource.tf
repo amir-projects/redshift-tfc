@@ -20,13 +20,11 @@ resource "aws_internet_gateway" "redshift_vpc_gw" {
 depends_on = [
 
    aws_vpc.redshift_vpc
+]
    
    tags = {
 
     Name = "redshift-igw"
 
   }
-
- ]
-
 }
