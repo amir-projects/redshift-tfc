@@ -1,7 +1,7 @@
 terraform {
   cloud {
     organization = "bjitinc"
-    hostname = "app.terraform.io"
+    hostname     = "app.terraform.io"
     workspaces {
       name = "redshift"
     }
