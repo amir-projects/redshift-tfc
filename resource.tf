@@ -6,29 +6,18 @@ resource "aws_vpc" "redshift_vpc" {
 
   instance_tenancy = "default"
 
-  tags = {
-
-    Name = "redshift-vpc"
-
-  }
-
+  tags = { Name = "redshift-vpc" }
 }
+
 ##Now, We will define an internet gateway that we can attach to our VPC. After this, We can easily access this from the internet##
 
 resource "aws_internet_gateway" "redshift_vpc_gw" {
 
   vpc_id = aws_vpc.redshift_vpc.id
 
-  depends_on = [
+  depends_on = [aws_vpc.redshift_vpc]
 
-    aws_vpc.redshift_vpc
-  ]
-
-  tags = {
-
-    Name = "redshift-igw"
-
-  }
+  tags = { Name = "redshift-igw" }
 }
 
 ##At this point, We will modify the default security group to only allow ingress from port 5439 which is the Redshift port##
@@ -52,18 +41,9 @@ resource "aws_default_security_group" "redshift_security_group" {
   }
 
 
-  tags = {
+  tags = { Name = "redshift-sg" }
 
-    Name = "redshift-sg"
-
-  }
-
-  depends_on = [
-
-    aws_vpc.redshift_vpc
-
-  ]
-
+  depends_on = [aws_vpc.redshift_vpc]
 }
 
 ##Next, we will create two subnets. These subnet will use when creating our Redshift Subnet Group##
@@ -78,18 +58,9 @@ resource "aws_subnet" "redshift_subnet_1" {
 
   map_public_ip_on_launch = "true"
 
-  tags = {
+  tags = { Name = "redshift-subnet-1" }
 
-    Name = "redshift-subnet-1"
-
-  }
-
-  depends_on = [
-
-    aws_vpc.redshift_vpc
-
-  ]
-
+  depends_on = [aws_vpc.redshift_vpc]
 }
 
 resource "aws_subnet" "redshift_subnet_2" {
@@ -102,16 +73,24 @@ resource "aws_subnet" "redshift_subnet_2" {
 
   map_public_ip_on_launch = "true"
 
+  tags = { Name = "redshift-subnet-2" }
+
+  depends_on = [aws_vpc.redshift_vpc]
+}
+##We will define the redshift subnet group resource##
+
+resource "aws_redshift_subnet_group" "redshift_subnet_group" {
+
+  name = "redshift-subnet-group"
+
+  subnet_ids = ["${aws_subnet.redshift_subnet_1.id}", "${aws_subnet.redshift_subnet_2.id}"]
+
   tags = {
 
-    Name = "redshift-subnet-2"
+    environment = "dev"
+
+    Name = "redshift-subnet-group"
 
   }
-
-  depends_on = [
-
-    aws_vpc.redshift_vpc
-
-  ]
 
 }
