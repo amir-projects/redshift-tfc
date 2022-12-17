@@ -65,3 +65,53 @@ resource "aws_default_security_group" "redshift_security_group" {
   ]
 
 }
+
+##Next, we will create two subnets. These subnet will use when creating our Redshift Subnet Group##
+
+resource "aws_subnet" "redshift_subnet_1" {
+
+  vpc_id = aws_vpc.redshift_vpc.id
+
+  cidr_block = var.redshift_subnet_cidr_first
+
+  availability_zone = "ap-northeast-1a"
+
+  map_public_ip_on_launch = "true"
+
+  tags = {
+
+    Name = "redshift-subnet-1"
+
+  }
+
+  depends_on = [
+
+    aws_vpc.redshift_vpc
+
+  ]
+
+}
+
+resource "aws_subnet" "redshift_subnet_2" {
+
+  vpc_id = aws_vpc.redshift_vpc.id
+
+  cidr_block = var.redshift_subnet_cidr_second
+
+  availability_zone = "ap-northeast-1c"
+
+  map_public_ip_on_launch = "true"
+
+  tags = {
+
+    Name = "redshift-subnet-2"
+
+  }
+
+  depends_on = [
+
+    aws_vpc.redshift_vpc
+
+  ]
+
+}
